@@ -14,7 +14,7 @@ function Gameboard() {
 
   const placeMove = (row, column, player) => {
     //Check to see if cell is empty, if not return
-    if (board[row][column] !== 0) {
+    if (board[row][column].getValue() !== 0) {
       return;
     }
 
@@ -43,3 +43,52 @@ function Cell() {
 
   return { addToken, getValue };
 }
+
+function GameController(
+  playerOneName = "Player One",
+  playerTwoName = "Player Two"
+) {
+  const board = Gameboard();
+
+  const players = [
+    {
+      name: playerOneName,
+      token: "X",
+    },
+    {
+      name: playerTwoName,
+      token: "O",
+    },
+  ];
+
+  let activePlayer = players[0];
+
+  const switchPlayerTurn = () => {
+    activePlayer = activePlayer === players[0] ? players[1] : players[0];
+  };
+
+  const getActivePlayer = () => activePlayer;
+
+  const printNewRound = () => {
+    board.printBoard();
+    console.log(`${getActivePlayer().name}'s turn.`);
+  };
+
+  const playRound = (row, column) => {
+    console.log(
+      `Assigning ${getActivePlayer().name}'s token to ${row}, ${column}`
+    );
+
+    board.placeMove(row, column, getActivePlayer().token);
+
+    switchPlayerTurn();
+    printNewRound();
+  };
+
+  //Initial print out
+  printNewRound();
+
+  return { playRound, getActivePlayer };
+}
+
+const game = GameController();
