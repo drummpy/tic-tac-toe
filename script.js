@@ -15,11 +15,12 @@ function Gameboard() {
   const placeMove = (row, column, player) => {
     //Check to see if cell is empty, if not return
     if (board[row][column].getValue() !== 0) {
-      return;
+      return false;
     }
 
     //If cell is valid, add token
     board[row][column].addToken(player);
+    return true;
   };
 
   //Prints board into console, joining each value with a |
@@ -79,7 +80,13 @@ function GameController(
       `Assigning ${getActivePlayer().name}'s token to ${row}, ${column}`
     );
 
-    board.placeMove(row, column, getActivePlayer().token);
+    const success = board.placeMove(row, column, getActivePlayer().token);
+
+    if (!success) {
+      console.log("That square is already taken.  Try again!");
+      printNewRound();
+      return;
+    }
 
     switchPlayerTurn();
     printNewRound();
