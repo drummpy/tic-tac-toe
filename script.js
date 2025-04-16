@@ -134,6 +134,17 @@ function GameController(
     }
   };
 
+  const checkDraw = () => {
+    const isDraw = board
+      .getBoard()
+      .every((row) => row.every((cell) => cell.getValue() !== 0));
+
+    if (isDraw) {
+      console.log("It's a draw!");
+      isGameOver = true;
+    }
+  };
+
   const playRound = (row, column) => {
     if (isGameOver) {
       return;
@@ -152,8 +163,11 @@ function GameController(
     }
 
     checkWinner();
-    switchPlayerTurn();
-    printNewRound();
+    checkDraw();
+    if (!isGameOver) {
+      switchPlayerTurn();
+      printNewRound();
+    }
   };
 
   //Initial print out
