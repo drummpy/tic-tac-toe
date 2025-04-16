@@ -72,10 +72,73 @@ function GameController(
 
   const printNewRound = () => {
     board.printBoard();
-    console.log(`${getActivePlayer().name}'s turn.`);
+    if (!isGameOver) {
+      console.log(`${getActivePlayer().name}'s turn.`);
+    }
+  };
+
+  let isGameOver = false;
+
+  const checkWinner = () => {
+    const currentBoard = board.getBoard();
+
+    //Check row
+    for (let i = 0; i < 3; i++) {
+      const firstValue = currentBoard[i][0].getValue();
+
+      const isWinningRow = currentBoard[i].every(
+        (cell) => cell.getValue() === firstValue && firstValue !== 0
+      );
+      if (isWinningRow) {
+        console.log("Winner Found!");
+        isGameOver = true;
+        return;
+      }
+    }
+
+    //Check column
+    for (let i = 0; i < 3; i++) {
+      const firstValue = currentBoard[0][i].getValue();
+
+      if (
+        firstValue !== 0 &&
+        currentBoard[1][i].getValue() === firstValue &&
+        currentBoard[2][i].getValue() === firstValue
+      ) {
+        console.log("Winner Found!");
+        isGameOver = true;
+        return;
+      }
+    }
+
+    //Check diagonal top-left to bottom-right
+    if (
+      currentBoard[0][0].getValue() !== 0 &&
+      currentBoard[0][0].getValue() === currentBoard[1][1].getValue() &&
+      currentBoard[1][1].getValue() === currentBoard[2][2].getValue()
+    ) {
+      console.log("Winner Found!");
+      isGameOver = true;
+      return;
+    }
+
+    //Check diagonal top-right to bottom-left
+    if (
+      currentBoard[0][2].getValue() !== 0 &&
+      currentBoard[0][2].getValue() === currentBoard[1][1].getValue() &&
+      currentBoard[1][1].getValue() === currentBoard[2][0].getValue()
+    ) {
+      console.log("Winner Found!");
+      isGameOver = true;
+      return;
+    }
   };
 
   const playRound = (row, column) => {
+    if (isGameOver) {
+      return;
+    }
+
     console.log(
       `Assigning ${getActivePlayer().name}'s token to ${row}, ${column}`
     );
@@ -88,6 +151,7 @@ function GameController(
       return;
     }
 
+    checkWinner();
     switchPlayerTurn();
     printNewRound();
   };
