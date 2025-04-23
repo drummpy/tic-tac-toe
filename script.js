@@ -53,6 +53,8 @@ function GameController(
   console.log("GameController initialized");
   console.log("Board: ", board);
 
+  let consoleText = "Please enter player names.";
+
   const players = [
     {
       name: playerOneName,
@@ -68,6 +70,7 @@ function GameController(
 
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
+    consoleText = `${getActivePlayer().name}'s turn.`;
   };
 
   const getActivePlayer = () => activePlayer;
@@ -76,6 +79,7 @@ function GameController(
     board.printBoard();
     if (!isGameOver) {
       console.log(`${getActivePlayer().name}'s turn.`);
+      consoleText = `${getActivePlayer().name}'s turn.`;
     }
   };
 
@@ -95,6 +99,7 @@ function GameController(
       if (isWinningRow) {
         console.log("Winner Found!");
         isGameOver = true;
+        consoleText = `${getActivePlayer().name} wins!`;
         return;
       }
     }
@@ -110,6 +115,7 @@ function GameController(
       ) {
         console.log("Winner Found!");
         isGameOver = true;
+        consoleText = `${getActivePlayer().name} wins!`;
         return;
       }
     }
@@ -122,6 +128,7 @@ function GameController(
     ) {
       console.log("Winner Found!");
       isGameOver = true;
+      consoleText = `${getActivePlayer().name} wins!`;
       return;
     }
 
@@ -133,6 +140,7 @@ function GameController(
     ) {
       console.log("Winner Found!");
       isGameOver = true;
+      consoleText = `${getActivePlayer().name} wins!`;
       return;
     }
   };
@@ -146,6 +154,7 @@ function GameController(
       if (isDraw) {
         console.log("It's a draw!");
         isGameOver = true;
+        consoleText = "It's a draw!";
       }
     }
   };
@@ -163,6 +172,7 @@ function GameController(
 
     if (!success) {
       console.log("That square is already taken.  Try again!");
+      consoleText = "That square is already taken.  Try again!";
       printNewRound();
       return;
     }
@@ -180,15 +190,18 @@ function GameController(
     return board.getBoard();
   };
 
+  const getConsoleText = () => consoleText;
+
   //Initial print out
   printNewRound();
 
-  return { playRound, getActivePlayer, getBoard };
+  return { playRound, getActivePlayer, getBoard, getConsoleText };
 }
 
 function UiController() {
   let gameInstance;
   const cells = document.querySelectorAll(".cell");
+  const text = document.querySelector("#textfield");
 
   const setGame = (game) => {
     gameInstance = game;
@@ -200,9 +213,11 @@ function UiController() {
 
         gameInstance.playRound(row, column);
         renderBoard();
+        updateText();
       });
     });
 
+    updateText();
     renderBoard();
   };
 
@@ -225,6 +240,10 @@ function UiController() {
         cell.textContent = "";
       }
     });
+  };
+
+  const updateText = () => {
+    text.textContent = gameInstance.getConsoleText();
   };
 
   return { renderBoard, setGame };
