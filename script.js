@@ -50,6 +50,8 @@ function GameController(
   playerTwoName = "Player Two"
 ) {
   const board = Gameboard();
+  console.log("GameController initialized");
+  console.log("Board: ", board);
 
   const players = [
     {
@@ -81,6 +83,7 @@ function GameController(
 
   const checkWinner = () => {
     const currentBoard = board.getBoard();
+    console.log("Checking winner with board: ", currentBoard);
 
     //Check row
     for (let i = 0; i < 3; i++) {
@@ -135,13 +138,15 @@ function GameController(
   };
 
   const checkDraw = () => {
-    const isDraw = board
-      .getBoard()
-      .every((row) => row.every((cell) => cell.getValue() !== 0));
+    if (!isGameOver) {
+      const isDraw = board
+        .getBoard()
+        .every((row) => row.every((cell) => cell.getValue() !== 0));
 
-    if (isDraw) {
-      console.log("It's a draw!");
-      isGameOver = true;
+      if (isDraw) {
+        console.log("It's a draw!");
+        isGameOver = true;
+      }
     }
   };
 
@@ -162,6 +167,7 @@ function GameController(
       return;
     }
 
+    console.log("Checking winner with board: ", board);
     checkWinner();
     checkDraw();
     if (!isGameOver) {
@@ -170,10 +176,60 @@ function GameController(
     }
   };
 
+  const getBoard = () => {
+    return board.getBoard();
+  };
+
   //Initial print out
   printNewRound();
 
-  return { playRound, getActivePlayer };
+  return { playRound, getActivePlayer, getBoard };
 }
 
+function UiController() {
+  let gameInstance;
+  const cells = document.querySelectorAll(".cell");
+
+  const setGame = (game) => {
+    gameInstance = game;
+
+    cells.forEach((cell) => {
+      cell.addEventListener("click", () => {
+        const row = parseInt(cell.dataset.row);
+        const column = parseInt(cell.dataset.column);
+
+        gameInstance.playRound(row, column);
+        renderBoard();
+      });
+    });
+
+    renderBoard();
+  };
+
+  const renderBoard = () => {
+    if (!gameInstance) {
+      console.log("Game instance is not set yet.");
+      return;
+    }
+
+    const board = gameInstance.getBoard();
+    console.log("Board from GameController: ", board);
+
+    cells.forEach((cell) => {
+      const row = parseInt(cell.dataset.row);
+      const column = parseInt(cell.dataset.column);
+
+      if (board[row][column].getValue() !== 0) {
+        cell.textContent = board[row][column].getValue();
+      } else {
+        cell.textContent = "";
+      }
+    });
+  };
+
+  return { renderBoard, setGame };
+}
+
+const ui = UiController();
 const game = GameController();
+ui.setGame(game);
