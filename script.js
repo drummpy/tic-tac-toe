@@ -202,6 +202,24 @@ function UiController() {
   let gameInstance;
   const cells = document.querySelectorAll(".cell");
   const text = document.querySelector("#textfield");
+  const dialog = document.querySelector("#dialog");
+  const startGameButton = document.querySelector("#startgame");
+  const playerOneInput = document.querySelector("#playerone");
+  const playerTwoInput = document.querySelector("#playertwo");
+
+  dialog.showModal();
+
+  startGameButton.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    const playerOneName = playerOneInput.value || "Player One";
+    const playerTwoName = playerTwoInput.value || "Player Two";
+
+    dialog.close();
+
+    const game = GameController(playerOneName, playerTwoName);
+    setGame(game);
+  });
 
   const setGame = (game) => {
     gameInstance = game;
@@ -250,5 +268,3 @@ function UiController() {
 }
 
 const ui = UiController();
-const game = GameController();
-ui.setGame(game);
