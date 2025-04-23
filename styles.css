@@ -5,6 +5,8 @@ body {
   height: 100%;
   font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  background-color: #f0f4f7;
+  color: #455a64;
 }
 
 .container {
@@ -31,7 +33,7 @@ body {
 }
 
 .board {
-  background-color: black;
+  background-color: #455a64;
   display: grid;
   aspect-ratio: 1 / 1;
   width: 50vmin;
@@ -41,7 +43,7 @@ body {
 }
 
 .cell {
-  background-color: white;
+  background-color: #f0f4f7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -49,4 +51,5 @@ body {
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+  color: #fa9c94;
 }
