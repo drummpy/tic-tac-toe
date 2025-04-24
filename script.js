@@ -42,7 +42,11 @@ function Cell() {
 
   const getValue = () => value;
 
-  return { addToken, getValue };
+  const setValue = (val) => {
+    value = val;
+  };
+
+  return { addToken, getValue, setValue };
 }
 
 function GameController(
@@ -53,7 +57,7 @@ function GameController(
   console.log("GameController initialized");
   console.log("Board: ", board);
 
-  let consoleText = "Please enter player names.";
+  let consoleText = "Please enter player names";
 
   const players = [
     {
@@ -70,7 +74,7 @@ function GameController(
 
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
-    consoleText = `${getActivePlayer().name}'s turn.`;
+    consoleText = `${getActivePlayer().name}'s turn`;
   };
 
   const getActivePlayer = () => activePlayer;
@@ -79,7 +83,7 @@ function GameController(
     board.printBoard();
     if (!isGameOver) {
       console.log(`${getActivePlayer().name}'s turn.`);
-      consoleText = `${getActivePlayer().name}'s turn.`;
+      consoleText = `${getActivePlayer().name}'s turn`;
     }
   };
 
@@ -173,8 +177,8 @@ function GameController(
     if (!success) {
       console.log("That square is already taken.  Try again!");
       consoleText = "That square is already taken.  Try again!";
-      printNewRound();
-      return;
+
+      return false;
     }
 
     console.log("Checking winner with board: ", board);
@@ -184,6 +188,7 @@ function GameController(
       switchPlayerTurn();
       printNewRound();
     }
+    return true;
   };
 
   const getBoard = () => {
@@ -192,10 +197,24 @@ function GameController(
 
   const getConsoleText = () => consoleText;
 
+  const resetGame = () => {
+    const currentBoard = board.getBoard();
+
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        currentBoard[i][j].setValue(0);
+      }
+    }
+
+    activePlayer = players[0];
+    isGameOver = false;
+    consoleText = `Game reset, ${getActivePlayer().name}'s turn`;
+  };
+
   //Initial print out
   printNewRound();
 
-  return { playRound, getActivePlayer, getBoard, getConsoleText };
+  return { playRound, getActivePlayer, getBoard, getConsoleText, resetGame };
 }
 
 function UiController() {
@@ -206,6 +225,7 @@ function UiController() {
   const startGameButton = document.querySelector("#startgame");
   const playerOneInput = document.querySelector("#playerone");
   const playerTwoInput = document.querySelector("#playertwo");
+  const resetGameButton = document.querySelector("#resetgame");
 
   dialog.showModal();
 
@@ -229,9 +249,11 @@ function UiController() {
         const row = parseInt(cell.dataset.row);
         const column = parseInt(cell.dataset.column);
 
-        gameInstance.playRound(row, column);
-        renderBoard();
-        updateText();
+        const success = gameInstance.playRound(row, column);
+        updateText(); // Always update the text, regardless of success
+        if (success) {
+          renderBoard();
+        }
       });
     });
 
@@ -261,8 +283,20 @@ function UiController() {
   };
 
   const updateText = () => {
+    console.log("Updating text:", gameInstance.getConsoleText());
     text.textContent = gameInstance.getConsoleText();
   };
+
+  resetGameButton.addEventListener("click", () => {
+    if (!gameInstance) {
+      console.log("Game instance is not set yet.");
+      return;
+    }
+
+    gameInstance.resetGame();
+    updateText();
+    renderBoard();
+  });
 
   return { renderBoard, setGame };
 }
